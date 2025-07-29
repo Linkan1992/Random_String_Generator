@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,10 +8,13 @@
     tools:context=".ui.MainActivity">
 
     <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
+        android:id="@+id/appbar"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/teal_200"
-        android:fitsSystemWindows="true">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
@@ -19,6 +22,34 @@
             android:layout_height="?attr/actionBarSize" />
 
     </com.google.android.material.appbar.AppBarLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/il_string_length"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
+        app:layout_constraintTop_toBottomOf="@id/appbar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btn_generate"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginVertical="16dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/it_string_length"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_generate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="100dp"
+        android:layout_marginEnd="16dp"
+        android:text="Generate"
+        app:layout_constraintStart_toEndOf="@id/il_string_length"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBaseline_toBaselineOf="@id/il_string_length"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
@@ -29,6 +60,8 @@
         android:layout_marginBottom="16dp"
         android:contentDescription="clear all data"
         android:backgroundTint="@color/teal_200"
-        app:srcCompat="@drawable/ic_delete" />
+        app:srcCompat="@drawable/ic_delete"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

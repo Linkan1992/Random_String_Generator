@@ -20,7 +20,7 @@ class MainViewModel @Inject constructor(
     private val _result = MutableLiveData<ResultEvent<RandomText>>()
     val result: LiveData<ResultEvent<RandomText>> = _result
 
-    fun queryRandomString(length: Int) {
+    fun fetchRandomString(length: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 _result.postValue(ResultEvent.Loading)

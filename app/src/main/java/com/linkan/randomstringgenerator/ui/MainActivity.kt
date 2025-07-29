@@ -1,6 +1,7 @@
 package com.linkan.randomstringgenerator.ui
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.viewModels
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
@@ -23,6 +24,14 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setSupportActionBar(binding.toolbar)
+
+        binding.btnGenerate.setOnClickListener {
+            val length = binding.itStringLength.text.toString().toIntOrNull() ?: 0
+            if(length > 0)
+                viewModel.fetchRandomString(length)
+            else
+                Toast.makeText(this, "Input can not be empty or zero value", Toast.LENGTH_SHORT).show()
+        }
 
         binding.fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
