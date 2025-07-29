@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.hiltAndroid)
     alias(libs.plugins.kotlinAndroidKsp)
+    id("org.jetbrains.kotlin.kapt")
 }
 
 android {
@@ -56,6 +57,7 @@ dependencies {
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.hilt.android)
     implementation(libs.hilt.compiler)
+    kapt(libs.hilt.compiler)
     implementation(libs.lifecycle.viewmodel.ktx)
     implementation(libs.lifecycle.livedata.ktx)
     implementation(libs.lifecycle.runtime.ktx)
