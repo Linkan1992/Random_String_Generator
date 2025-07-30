@@ -1,12 +1,17 @@
 package com.linkan.randomstringgenerator.ui
 
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.Orientation
 import com.linkan.randomstringgenerator.R
 import com.linkan.randomstringgenerator.databinding.ActivityMainBinding
+import com.linkan.randomstringgenerator.domain.model.RandomText
 import com.linkan.randomstringgenerator.util.ResultEvent
 import dagger.hilt.EntryPoint
 import dagger.hilt.android.AndroidEntryPoint
@@ -16,6 +21,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private val viewModel: MainViewModel by viewModels()
+
+    private val randomStringAdapter : RandomStringAdapter by lazy { RandomStringAdapter() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,21 +41,45 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null)
-                .setAnchorView(R.id.fab).show()
+            // clear all item
+            randomStringAdapter.stringList = ArrayList<RandomText>()
         }
-
+        initRecyclerView()
         observeChanges()
+    }
+
+    private fun initRecyclerView() {
+        binding.apply {
+            stringRecyclerView.layoutManager = LinearLayoutManager(this@MainActivity, RecyclerView.VERTICAL, false)
+            stringRecyclerView.adapter = randomStringAdapter
+
+            randomStringAdapter.deleteOnItemClickListener { deleteItem, currentList->
+                val newList = ArrayList<RandomText>()
+                newList.addAll(currentList)
+                newList.remove(deleteItem)
+                randomStringAdapter.stringList = newList
+            }
+        }
     }
 
     private fun observeChanges() {
         viewModel.result.observe(this) { result ->
-            // TO-DO
             when(result){
-               is ResultEvent.Loading -> {}
-               is ResultEvent.Success -> {}
-               is ResultEvent.Error -> {}
+               is ResultEvent.Loading -> {
+                   binding.progressBar.visibility = View.VISIBLE
+               }
+               is ResultEvent.Success -> {
+                   val newList = ArrayList<RandomText>()
+                   newList.addAll(randomStringAdapter.stringList)
+                   newList.add(result.data)
+                   randomStringAdapter.stringList = newList
+               }
+               is ResultEvent.Error -> {
+
+                   Toast.makeText(this@MainActivity, result.exception.message ?: "Something Went Wrong", Toast.LENGTH_SHORT)
+                       .show()
+                   binding?.progressBar?.visibility = View.GONE
+               }
             }
         }
     }

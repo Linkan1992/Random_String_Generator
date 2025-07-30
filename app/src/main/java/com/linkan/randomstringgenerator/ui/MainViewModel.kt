@@ -28,6 +28,7 @@ class MainViewModel @Inject constructor(
                 _result.postValue(random)
             } catch (e: Exception) {
                 // Handle or expose error state
+                _result.postValue(ResultEvent.Error(e))
             }
         }
     }
