@@ -17,20 +17,29 @@ class RandomTextProviderDataSource @Inject constructor (
     private val uri = Uri.parse("content://com.iav.contestdataprovider/text")
 
     override suspend fun getRandomText(length: Int): RandomText {
-      /*  val bundle = Bundle().apply {
-            putInt("length", length)
-            putInt(ContentResolver.QUERY_ARG_LIMIT, 1)
+        val bundle = Bundle().apply {
+            putInt(ContentResolver.QUERY_ARG_LIMIT, length)
         }
 
         val cursor = context.contentResolver.query(uri, null, bundle, null)
-*/
-        val uri = Uri.parse("content://com.iav.contestdataprovider/text?length=${length}")
+
+        /* val uri = Uri.parse("content://com.iav.contestdataprovider/text?data=${length}")
         val cursor = context.contentResolver.query(uri, null, null, null, null)
+        */
+
+        /*val uri = Uri.parse("content://com.iav.contestdataprovider/text/${length}")
+        val cursor = context.contentResolver.query(uri, null, null, null, null)
+        */
+
+        /*val selection = "data = ?"
+        val selectionArgs = arrayOf("$length")
+        val cursor = context.contentResolver.query(uri, null, selection, selectionArgs, null)
+*/
         cursor?.use {
             if (it.moveToFirst()) {
                 val jsonStr = it.getString(it.getColumnIndexOrThrow("data"))
                 val json = JSONObject(jsonStr).getJSONObject("randomText")
-
+                cursor.close()
                 return RandomText(
                     value = json.getString("value"),
                     length = json.getInt("length"),
