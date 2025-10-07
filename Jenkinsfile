@@ -119,6 +119,9 @@ RELEASE_NOTES=What's new: - Added new features - Fixed bug - Improved performanc
                     sh "mkdir -p ${DESTINATION_PATH}"
                     sh "rm -rf ${buildPath}/*"
 
+                    // Make gradlew executable to prevent permission errors
+                    sh "chmod +x ./gradlew"
+
                     echo "🧱 Build folders prepared for ${buildType}"
                 }
             }
