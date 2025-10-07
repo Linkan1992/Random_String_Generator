@@ -119,6 +119,9 @@ RELEASE_NOTES=What's new: - Added new features - Fixed bug - Improved performanc
                     sh "mkdir -p ${DESTINATION_PATH}"
                     sh "rm -rf ${buildPath}/*"
 
+                    // Make gradlew executable to prevent permission errors
+                    sh "chmod +x ./gradlew"
+
                     echo "🧱 Build folders prepared for ${buildType}"
                 }
             }
@@ -143,7 +146,7 @@ RELEASE_NOTES=What's new: - Added new features - Fixed bug - Improved performanc
             steps {
                 script {
                     def buildType = params.BUILD_TYPE
-                    def buildCommand = "./gradlew assemble${buildType.capitalize()}"
+                    def buildCommand = "./gradlew assemble${buildType.capitalize()} --stacktrace --info --no-daemon"
                     echo "🏗️ Building ${buildType} APK..."
                     sh buildCommand
                 }
