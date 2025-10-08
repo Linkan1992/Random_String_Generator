@@ -7,6 +7,10 @@ pipeline {
 
     agent any
 
+    tools {
+            jdk 'jdk17'
+        }
+
     environment {
         // Project paths
         BUILD_PATH = 'app/build/outputs/apk'
@@ -141,6 +145,12 @@ RELEASE_NOTES=What's new: - Added new features - Fixed bug - Improved performanc
                 }
             }
         }
+
+         stage('Check Java') {
+                    steps {
+                        sh 'java -version'
+                    }
+                }
 
         stage('Build') {
             steps {
