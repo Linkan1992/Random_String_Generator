@@ -24,8 +24,8 @@ pipeline {
 
         // Git & Firebase
         PROJECT_GIT_URL = 'https://github.com/Linkan1992/Random_String_Generator.git'
-        APP_ID = '1:1050128836546:android:319e12c85411a6f08fd85b'
-        FIREBASE_SERVICE_AC_KEY_PATH = '/Users/linkan/Downloads/totax-2b5f9-firebase-adminsdk-6iuqx-bf59c84cf0.json'
+        APP_ID = '1:294722677248:android:2404a46b35875aea3ac6e5'
+        FIREBASE_SERVICE_AC_KEY_PATH = '/Users/linkan/Downloads/loginfirebase-b7d06-firebase-adminsdk-fbsvc-5fa0ac06bd.json'
     }
 
     stages {
@@ -188,7 +188,7 @@ RELEASE_NOTES=What's new: - Added new features - Fixed bug - Improved performanc
             }
         }
 
-       /* stage('Upload to Firebase Distribution') {
+       stage('Upload to Firebase Distribution') {
             steps {
                 script {
                     def apkPath = sh(script: "ls ${BUILD_PATH}/${params.BUILD_TYPE}/*.apk | head -n 1", returnStdout: true).trim()
@@ -197,7 +197,7 @@ RELEASE_NOTES=What's new: - Added new features - Fixed bug - Improved performanc
                     env.GOOGLE_APPLICATION_CREDENTIALS = "${FIREBASE_SERVICE_AC_KEY_PATH}"
 
                     def firebaseUploadCmd = """
-                    firebase appdistribution:distribute "${apkPath}" \
+                    /opt/homebrew/bin/firebase appdistribution:distribute "${apkPath}" \
                       --app "${APP_ID}" \
                       --groups "${params.FIREBASE_TESTERS}" \
                       --release-notes "${params.RELEASE_NOTES.replaceAll('"', '\\"')}"
@@ -207,6 +207,6 @@ RELEASE_NOTES=What's new: - Added new features - Fixed bug - Improved performanc
                     sh firebaseUploadCmd
                 }
             }
-        }*/
+        }
     }
 }
