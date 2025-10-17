@@ -199,7 +199,7 @@ RELEASE_NOTES=What's new: - Added new features - Fixed bug - Improved performanc
                     def firebaseUploadCmd = """
                     /opt/homebrew/bin/node /opt/homebrew/bin/firebase appdistribution:distribute "${apkPath}" \
                       --app "${APP_ID}" \
-                      --testerEmails "${params.FIREBASE_TESTERS}" \
+                      --testers "${params.FIREBASE_TESTERS}" \
                       --release-notes "${params.RELEASE_NOTES.replaceAll('"', '\\"')}"
                     """
 
