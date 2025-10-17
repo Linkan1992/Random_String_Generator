@@ -197,7 +197,7 @@ RELEASE_NOTES=What's new: - Added new features - Fixed bug - Improved performanc
                     env.GOOGLE_APPLICATION_CREDENTIALS = "${FIREBASE_SERVICE_AC_KEY_PATH}"
 
                     def firebaseUploadCmd = """
-                    /opt/homebrew/bin/firebase appdistribution:distribute "${apkPath}" \
+                    /opt/homebrew/bin/node /opt/homebrew/bin/firebase appdistribution:distribute "${apkPath}" \
                       --app "${APP_ID}" \
                       --groups "${params.FIREBASE_TESTERS}" \
                       --release-notes "${params.RELEASE_NOTES.replaceAll('"', '\\"')}"
