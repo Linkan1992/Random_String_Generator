@@ -15,8 +15,8 @@ android {
         applicationId = "com.linkan.randomstringgenerator"
         minSdk = 26
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 8
+        versionName = "6.43"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
