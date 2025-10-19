@@ -26,6 +26,10 @@ pipeline {
         PROJECT_GIT_URL = 'https://github.com/Linkan1992/Random_String_Generator.git'
         APP_ID = '1:294722677248:android:2404a46b35875aea3ac6e5'
         FIREBASE_SERVICE_AC_KEY_PATH = '/Users/linkan/Downloads/loginfirebase-b7d06-firebase-adminsdk-fbsvc-5fa0ac06bd.json'
+
+        // Firebase CLI paths
+        NODE_PATH = '/opt/homebrew/bin/node'
+        FIREBASE_PATH = '/opt/homebrew/bin/firebase'
     }
 
     stages {
@@ -93,7 +97,7 @@ RELEASE_NOTES=What's new: - Added new features - Fixed bug - Improved performanc
                     properties([
                         parameters([
                             choice(name: 'BUILD_TYPE', choices: ['debug', 'release'], description: 'Select build type'),
-                            string(name: 'FIREBASE_TESTERS', defaultValue: 'uat-testers', description: 'Firebase tester group'),
+                            string(name: 'FIREBASE_TESTERS', defaultValue: 'rbl-android-unofficial', description: 'Firebase tester group'),
                             string(name: 'VERSION_CODE', defaultValue: "${fileContent['VERSION_CODE']}", description: "Version code (Current: ${fileContent['VERSION_CODE']})"),
                             string(name: 'VERSION_NAME', defaultValue: "${fileContent['VERSION_NAME']}", description: "Version name (Current: ${fileContent['VERSION_NAME']})"),
                             text(name: 'RELEASE_NOTES', defaultValue: "${fileContent['RELEASE_NOTES'].replaceAll('\t', '\n')}", description: 'Release notes:')
@@ -179,19 +183,19 @@ RELEASE_NOTES=What's new: - Added new features - Fixed bug - Improved performanc
             }
         }
 
-        stage('Copy to Desktop') {
+        /* stage('Copy to Desktop') {
             steps {
                 script {
-                    sh "cp ${BUILD_PATH}/${params.BUILD_TYPE}/*.apk ${DESTINATION_PATH}"
+                    sh "cp ${BUILD_PATH}/${params.BUILD_TYPE} *//*.apk ${DESTINATION_PATH}"
                     echo "✅ Copied APK to ${DESTINATION_PATH}"
                 }
             }
-        }
+        } */
 
-       stage('Upload to Firebase Distribution') {
+       /* stage('Upload to Firebase Distribution') {
             steps {
                 script {
-                    def apkPath = sh(script: "ls ${BUILD_PATH}/${params.BUILD_TYPE}/*.apk | head -n 1", returnStdout: true).trim()
+                    def apkPath = sh(script: "ls ${BUILD_PATH}/${params.BUILD_TYPE} *//*.apk | head -n 1", returnStdout: true).trim()
                     echo "🚀 Uploading ${apkPath} to Firebase..."
 
                     env.GOOGLE_APPLICATION_CREDENTIALS = "${FIREBASE_SERVICE_AC_KEY_PATH}"
@@ -207,6 +211,46 @@ RELEASE_NOTES=What's new: - Added new features - Fixed bug - Improved performanc
                     sh firebaseUploadCmd
                 }
             }
+        } */
+
+        stage('Upload to Firebase Distribution') {
+            steps {
+                script {
+                    def apkPath = sh(script: "ls ${BUILD_PATH}/${params.BUILD_TYPE}/*.apk | head -n 1", returnStdout: true).trim()
+
+                    env.GOOGLE_APPLICATION_CREDENTIALS = "${FIREBASE_SERVICE_AC_KEY_PATH}"
+
+                    // Parse input list (comma-separated)
+                    def testersInput = params.FIREBASE_TESTERS ?: ''
+                    def entries = testersInput.split(',').collect { it.trim() }.findAll { it }
+
+                    // Separate emails and group names
+                    def emailList = entries.findAll { it.contains('@') }
+                    def groupList = entries.findAll { !it.contains('@') }
+
+                    // Prepare CLI arguments
+                    def emailArg = emailList ? "--testers \"${emailList.join(',')}\"" : ""
+                    def groupArg = groupList ? "--groups \"${groupList.join(',')}\"" : ""
+
+                    // Escape release notes
+                    def releaseNotesEscaped = params.RELEASE_NOTES.replaceAll('"', '\\"')
+
+                    // Build Firebase upload command
+                    def firebaseUploadCmd = """
+                        ${env.NODE_PATH} ${env.FIREBASE_PATH} appdistribution:distribute "${apkPath}" \
+                          --app "${APP_ID}" \
+                          ${emailArg} \
+                          ${groupArg} \
+                          --release-notes "${releaseNotesEscaped}"
+                    """.trim()
+
+                    echo "👥 Groups: ${groupList}"
+                    echo "📧 Testers: ${emailList}"
+                    echo "🚀 Uploading ${apkPath} to Firebase..."
+                    sh firebaseUploadCmd
+                }
+            }
         }
+
     }
 }
