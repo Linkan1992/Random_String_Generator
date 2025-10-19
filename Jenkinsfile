@@ -259,6 +259,7 @@ RELEASE_NOTES=What's new: - Added new features - Fixed bug - Improved performanc
             script {
               echo "Preparing to commit updated Gradle version..."
 
+              // Git identity
               sh '''
                 git config user.name "Linkan Chauhan CI"
                 git config user.email "linkanchauhan@gmail.com"
@@ -269,28 +270,34 @@ RELEASE_NOTES=What's new: - Added new features - Fixed bug - Improved performanc
               sh 'git checkout develop'
 
               // Add files if changed
-              sh """
-                if [ -n "$(git status --porcelain ${GRADLE_FILE} || true)" ]; then
-                  git add ${GRADLE_FILE}
-                  git commit -m "Auto-update versionCode=${params.VERSION_CODE}, versionName=${params.VERSION_NAME} [Jenkins Build #${BUILD_NUMBER}]"
-                  echo "Committed changes"
-                else
-                  echo "No changes to commit for ${GRADLE_FILE}"
-                fi
-              """
+              def commitMessage = "Auto-update versionCode=${params.VERSION_CODE}, versionName=${params.VERSION_NAME} [Jenkins Build #${BUILD_NUMBER}]"
 
-              // Push using token from Jenkins credentials
+              sh '''
+                if [ -n "$(git status --porcelain app/build.gradle.kts || true)" ]; then
+                  git add app/build.gradle.kts
+                  echo "Committing changes..."
+                else
+                  echo "No changes to commit for app/build.gradle.kts"
+                fi
+              '''
+
+              // Commit with Groovy variable injected safely
+              sh "git commit -m '${commitMessage}' || echo 'No commit to perform'"
+
+              // Push using token
               withCredentials([string(credentialsId: 'GITHUB_PAT', variable: 'GIT_TOKEN')]) {
                 sh '''
+                  set -e
                   git remote set-url origin https://${GIT_TOKEN}@github.com/Linkan1992/Random_String_Generator.git
                   git push origin develop || ( echo "Push failed"; exit 1 )
                 '''
               }
 
-              echo "Pushed updated Gradle version to GitHub successfully."
+              echo "✅ Pushed updated Gradle version to GitHub successfully."
             }
           }
         }
+
 
     }
 }
