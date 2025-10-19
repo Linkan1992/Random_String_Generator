@@ -252,5 +252,46 @@ RELEASE_NOTES=What's new: - Added new features - Fixed bug - Improved performanc
             }
         }
 
+
+        stage('Commit & Push Updated Gradle Version') {
+          when { expression { currentBuild.currentResult == 'SUCCESS' } }
+          steps {
+            script {
+              echo "Preparing to commit updated Gradle version..."
+
+              sh '''
+                git config user.name "Linkan Chauhan CI"
+                git config user.email "linkanchauhan@gmail.com"
+              '''
+
+              // ensure branch
+              sh 'git fetch origin'
+              sh "git checkout develop"
+
+              // add files if changed
+              sh """
+                if [ -n "$(git status --porcelain ${GRADLE_FILE} || true)" ]; then
+                  git add ${GRADLE_FILE}
+                  git commit -m "uto-update versionCode=${params.VERSION_CODE}, versionName=${params.VERSION_NAME} [Jenkins Build #${BUILD_NUMBER}]"
+                  echo "Committed changes"
+                else
+                  echo "No changes to commit for ${GRADLE_FILE}"
+                fi
+              """
+
+              // push using token from Jenkins credentials
+              withCredentials([string(credentialsId: 'GITHUB_PAT', variable: 'GIT_TOKEN')]) {
+                sh """
+                  git remote set-url origin https://${GIT_TOKEN}@github.com/Linkan1992/Random_String_Generator.git
+                  git push origin develop || ( echo "Push failed"; exit 1 )
+                """
+              }
+
+              echo "Pushed updated Gradle version to GitHub successfully."
+            }
+          }
+        }
+
+
     }
 }
